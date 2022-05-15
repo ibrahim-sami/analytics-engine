@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <head>
+      <style>
+      #details_tbl {
+        font-family: Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 50%;
+      }
+      
+      #details_tbl td, #details_tbl th {
+        border: 1px solid #ddd;
+        padding: 8px;
+      }
+      
+      #details_tbl tr:nth-child(even){background-color: #f2f2f2;}
+      
+      #details_tbl tr:hover {background-color: #ddd;}
+      
+      #details_tbl th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #141615;
+        color: white;
+      }
+      </style>
+      </head>
+  </head>
+  <body>
+    <p>Hello {{ name|default('there', true) }},</p>
+    <p>This is a project level summary that shows week on week movements around key metrics.</p>
+    <p>A total of <b>{{num_projects}}</b> projects with <b>{{num_workflows}}</b> workflows and <b>{{num_agents}}</b> agents found. </p>
+    <p>The date ranges for the data are: <br>
+      Current week: &emsp;<b>{{start_current_week}}</b> - <b>{{end_current_week}}</b><br>
+      Previous week: &emsp;<b>{{start_previous_week}}</b> - <b>{{end_previous_week}}</b>
+    </p>
+    <p>The table below shows top movements (+ve and -ve) for each metric. See attached file for details on all projects.</p>
+    <table id='details_tbl'>
+        <thead>
+            <tr>
+                <th>Metric</th>
+                <th>Project Group ID</th>
+                <th>Project Name</th>
+                <th>Current week value</th>
+                <th>Previous week value</th>
+                <th>Movement</th>
+              </tr>
+        </thead>
+        {% for item in items %}
+        <tbody>
+            <tr>
+                <td>{{item.metric}}</td>
+                <td>{{item.project_group_id}}</td>
+                <td>{{item.project_name}}</td>
+                <td>{{item.current_week_value}}</td>
+                <td>{{item.previous_week_value}}</td>
+                <td>{{item.movt}}</td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+    <p>Kind Regards,</p>
+    <p>~BA Team</p>
+  </body>
+</html>

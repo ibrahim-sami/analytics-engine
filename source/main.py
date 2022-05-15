@@ -77,11 +77,11 @@ def execute(event, context):
             df.to_csv(os.path.join(OUTPUT_DIR, 'df_original.csv'))
         except Exception:
             ...
-        df = df[~df['is_missing']] # all movts are null, no data at all for prev or current weeks
+        df_no_nulls = df[~df['is_missing']] # all movts are null, no data at all for prev or current weeks
         
         # df[movt_cols] = df[movt_cols].round(2) # format movt cols
         try:
-            df.to_csv(os.path.join(OUTPUT_DIR, 'df_no_nulls.csv'))
+            df_no_nulls.to_csv(os.path.join(OUTPUT_DIR, 'df_no_nulls.csv'))
         except Exception:
             ...
         

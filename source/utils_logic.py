@@ -30,7 +30,7 @@ def get_top_projects(df_movt:DataFrame, movt_cols:list):
         # remove unwanted cols
         current_col = str(col).replace("_movt", "")
         prev_col = str(col).replace("_movt", "_prev")
-        sub_df = sub_df[['project_group_id', 'project_name', current_col, prev_col, col]]
+        sub_df = sub_df[['project_group_id', 'project_group_name', current_col, prev_col, col]]
 
         # remove nulls
         sub_df['is_missing'] = sub_df[[col]].isna().all(axis=1)
@@ -45,7 +45,7 @@ def get_top_projects(df_movt:DataFrame, movt_cols:list):
             metric=METRIC_NAMES[col],
             data_max=dict(
                 project_group_id=sub_df['project_group_id'][idx],
-                project_name=sub_df['project_name'][idx],
+                project_group_name=sub_df['project_group_name'][idx],
                 current_week_value=sub_df[current_col][idx],
                 previous_week_value=sub_df[prev_col][idx],
                 movt=sub_df[col][idx]
@@ -56,7 +56,7 @@ def get_top_projects(df_movt:DataFrame, movt_cols:list):
         idx = sub_df[col].idxmin()
         sub_dict['data_min'] = dict(
                 project_group_id=sub_df['project_group_id'][idx],
-                project_name=sub_df['project_name'][idx],
+                project_group_name=sub_df['project_group_name'][idx],
                 current_week_value=sub_df[current_col][idx],
                 previous_week_value=sub_df[prev_col][idx],
                 movt=sub_df[col][idx]

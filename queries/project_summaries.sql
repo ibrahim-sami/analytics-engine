@@ -1,5 +1,5 @@
 WITH current_week_data AS (
-  SELECT project_group_id, project_name, 
+  SELECT project_group_id, project_group_name, 
   COUNT(DISTINCT project_id) as num_workflows,
   COUNT(DISTINCT user_employee_code) AS num_agents,
   SUM(total_submission_count) AS num_submissions,
@@ -13,7 +13,7 @@ WITH current_week_data AS (
   GROUP BY 1,2
 ),
 previous_week_data AS (
-  SELECT project_group_id, project_name, 
+  SELECT project_group_id, project_group_name, 
   COUNT(DISTINCT project_id) as num_workflows_prev,
   COUNT(DISTINCT user_employee_code) AS num_agents_prev,
   SUM(total_submission_count) AS num_submissions_prev,
@@ -26,7 +26,7 @@ previous_week_data AS (
   WHERE delivery_date BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 14 DAY) AND DATE_SUB(CURRENT_DATE(), INTERVAL 8 DAY)
   GROUP BY 1,2
 )
-SELECT a.project_group_id, a.project_name,
+SELECT a.project_group_id, a.project_group_name,
 a.num_workflows, b.num_workflows_prev,
 a.num_agents, b.num_agents_prev,
 a.num_submissions, b.num_submissions_prev,
@@ -38,4 +38,4 @@ a.avg_rework_time, b.avg_rework_time_prev
 FROM current_week_data a
 LEFT JOIN previous_week_data b
 ON a.project_group_id = b.project_group_id
-AND a.project_name = b.project_name
+AND a.project_group_name = b.project_group_name

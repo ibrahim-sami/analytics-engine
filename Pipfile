@@ -13,6 +13,8 @@ jinja2 = "*"
 pyarrow = "*"
 pandas = "*"
 db-dtypes = "*"
+openpyxl = "*"
+xlsxwriter = "*"
 
 [dev-packages]
 

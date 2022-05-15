@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
 from datetime import date, timedelta
+import numpy as np
 
 from utils import setup_logging, query_bigq
 from utils_logic import get_top_projects
-from utils_email import send_template_email
+from utils_email import send_template_email, convert_dfs_to_iostrean
 
 PROJECT = 'hub-data-295911'
 DATASET = 'onhub_data'
@@ -58,7 +59,7 @@ def execute(event, context):
         df['num_workflows_movt'] = (df['num_workflows'] - df['num_workflows_prev']) / df['num_workflows_prev']
         df['num_agents_movt'] = (df['num_agents'] - df['num_agents_prev']) / df['num_agents_prev']
         df['num_submissions_movt'] = (df['num_submissions'] - df['num_submissions_prev']) / df['num_submissions_prev']
-        df['sumbission_rate_mins_movt'] = (df['sumbission_rate_mins'] - df['sumbission_rate_mins_prev']) / df['sumbission_rate_mins_prev']
+        df['sumbission_rate_mins_movt'] = np.round((df['sumbission_rate_mins'] - df['sumbission_rate_mins_prev']) / df['sumbission_rate_mins_prev'], decimals=2)
         df['avg_first_good_submission_rate_movt'] = (df['avg_first_good_submission_rate'] - df['avg_first_good_submission_rate_prev']) / df['avg_first_good_submission_rate_prev']
         df['avg_rejection_rate_movt'] = (df['avg_rejection_rate'] - df['avg_rejection_rate_prev']) / df['avg_rejection_rate_prev']
         df['avg_quality_score_movt'] = (df['avg_quality_score'] - df['avg_quality_score_prev']) / df['avg_quality_score_prev']
@@ -76,6 +77,8 @@ def execute(event, context):
         except Exception:
             ...
         df = df[~df['is_missing']] # all movts are null, no data at all for prev or current weeks
+        df[movt_cols] = np.round(df[movt_cols],decimals=2)
+        # df[movt_cols] = df[movt_cols].round(2) # format movt cols
         try:
             df.to_csv(os.path.join(OUTPUT_DIR, 'df_no_nulls.csv'))
         except Exception:
@@ -84,16 +87,21 @@ def execute(event, context):
         '''
         Get top project for every movt metric
         '''
-        results = get_top_projects(df, movt_cols)
+        LOGGER.debug(f"Getting top projects for the following columns: {movt_cols}")
+        results, sub_dfs = get_top_projects(df, movt_cols)
+        
+        LOGGER.debug("Sending email. . .")
         start_current_week = date.today() - timedelta(days=7)
         end_current_week = start_current_week + timedelta(days=6)
         end_previous_week = start_current_week - timedelta(days=1)
         start_previous_week = end_previous_week - timedelta(days=6)
+
         output = send_template_email(
             template='mgmt_summary.html', # TODO format HTML table and its entries
             recipients=IB_EMAIL,
             CCs=[],
             subj=f"Project Level Summary as at {date.today().strftime('%d %b %Y')}",
+            attachment_file_stream=convert_dfs_to_iostrean(dfs=sub_dfs, filename=f'detailed_output_{date.today().strftime("%Y_%m_%d")}.xlsx'),
             num_projects=num_projects,
             num_workflows=num_workflows,
             num_agents=num_agents,

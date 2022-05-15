@@ -1,14 +1,14 @@
+from io import BytesIO
 import smtplib
 import re
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import pandas as pd
-from datetime import date, datetime
-from numpy import double
 import os
 
-from utils import get_credentials, get_spreadsheet_values
+from utils import get_credentials
 
 # Suppress pandas warning: A value is trying to be set on a copy of a slice from a DataFrame.
 # https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
@@ -32,18 +32,18 @@ def is_email_valid(email:str):
         return False
 
 
-def send_template_email(template:str, recipients:list, CCs:list, subj:str, **kwargs):
+def send_template_email(template:str, recipients:list, CCs:list, subj:str, attachment_file_stream:tuple, **kwargs):
     env = Environment(
         loader=FileSystemLoader('templates'),
         autoescape=select_autoescape(['html', 'xml'])
     )
     template = env.get_template(template)
     body = template.render(**kwargs)
-    output = send_email(recipients, CCs, subj, body)
+    output = send_email(recipients, CCs, subj, body, attachment_file_stream)
     return output
 
 
-def send_email(recipients:list, CCs:list, subj:str, body:str): 
+def send_email(recipients:list, CCs:list, subj:str, body:str, attachment_file_stream:tuple): 
     msg = MIMEMultipart()
     msg['Subject'] = subj  
     msg['From'] = GMAIL_USER
@@ -51,6 +51,10 @@ def send_email(recipients:list, CCs:list, subj:str, body:str):
     msg['Cc'] = ", ".join(CCs)
     msg.add_header('Content-Type','text/html')
     msg.attach(MIMEText(body, 'html'))
+    if attachment_file_stream:
+        io = attachment_file_stream[0]
+        filename = attachment_file_stream[1]
+        msg.attach(MIMEApplication(io.getvalue(), Name=filename))
 
     # NOTE: dataframe for prt_update check exceed limit,
     # instead we use the gsheet links to the exceptions files
@@ -69,3 +73,13 @@ def send_email(recipients:list, CCs:list, subj:str, body:str):
     except Exception as ex:
         return ("Something went wrong….", ex)
 
+def convert_dfs_to_iostrean(dfs:dict, filename:str):
+    output = BytesIO()
+    writer = pd.ExcelWriter(output, engine='xlsxwriter')
+    for name, data in  dfs.items():
+        data.to_excel(excel_writer=writer, 
+                        sheet_name=str(name).removesuffix("_movt"),
+                        index=False)
+
+    writer.save()
+    return (output, filename)

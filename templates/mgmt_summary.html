@@ -5,7 +5,7 @@
       #details_tbl {
         font-family: Arial, Helvetica, sans-serif;
         border-collapse: collapse;
-        width: 50%;
+        width: 70%;
       }
       
       #details_tbl td, #details_tbl th {
@@ -32,8 +32,8 @@
     <p>This is a project level summary that shows week on week movements around productivity metrics.</p>
     <p>A total of <b>{{num_projects}}</b> projects with <b>{{num_workflows}}</b> workflows and <b>{{num_agents}}</b> agents found. </p>
     <p>The date ranges for the data are: <br>
-      Current week: &emsp;<b>{{start_current_week}}</b> - <b>{{end_current_week}}</b><br>
-      Previous week: &emsp;<b>{{start_previous_week}}</b> - <b>{{end_previous_week}}</b>
+      Current week: &emsp;&emsp;<b>{{start_current_week}}</b> - <b>{{end_current_week}}</b><br>
+      Previous week: &emsp;&emsp;<b>{{start_previous_week}}</b> - <b>{{end_previous_week}}</b>
     </p>
     <p>The table below shows top movements (+ve and -ve) for each metric. See attached file for details on all projects.</p>
     <table id='details_tbl'>
@@ -44,18 +44,25 @@
                 <th>Project Name</th>
                 <th>Current week value</th>
                 <th>Previous week value</th>
-                <th>Movement</th>
+                <th>% Change</th>
               </tr>
         </thead>
         {% for item in items %}
         <tbody>
+            <tr><td rowspan="3">{{item.metric}}</td></tr>
             <tr>
-                <td>{{item.metric}}</td>
-                <td>{{item.project_group_id}}</td>
-                <td>{{item.project_name}}</td>
-                <td>{{item.current_week_value}}</td>
-                <td>{{item.previous_week_value}}</td>
-                <td>{{item.movt}}</td>
+                <td>{{item.data_max.project_group_id}}</td>
+                <td>{{item.data_max.project_name}}</td>
+                <td>{{item.data_max.current_week_value}}</td>
+                <td>{{item.data_max.previous_week_value}}</td>
+                <td>{{item.data_max.movt}}</td>
+            </tr>
+            <tr>
+                <td>{{item.data_min.project_group_id}}</td>
+                <td>{{item.data_min.project_name}}</td>
+                <td>{{item.data_min.current_week_value}}</td>
+                <td>{{item.data_min.previous_week_value}}</td>
+                <td>{{item.data_min.movt}}</td>
             </tr>
         </tbody>
         {% endfor %}

@@ -98,9 +98,9 @@ def execute(event, context):
 
         output = send_template_email(
             template='mgmt_summary.html', # TODO format HTML table and its entries
-            recipients=IB_EMAIL,
+            recipients=CCs, # TODO update recipients and CCs
             CCs=[],
-            subj=f"Project Level Summary as at {date.today().strftime('%d %b %Y')}",
+            subj=f"[TEST] Project Level Summary as at {date.today().strftime('%d %b %Y')}", # TODO remove TEST
             attachment_file_stream=convert_dfs_to_iostrean(dfs=sub_dfs, filename=f'detailed_output_{date.today().strftime("%Y_%m_%d")}.xlsx'),
             num_projects=num_projects,
             num_workflows=num_workflows,

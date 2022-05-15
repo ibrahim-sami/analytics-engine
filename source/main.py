@@ -58,7 +58,7 @@ def execute(event, context):
         df['num_workflows_movt'] = (df['num_workflows'] - df['num_workflows_prev']) / df['num_workflows_prev']
         df['num_agents_movt'] = (df['num_agents'] - df['num_agents_prev']) / df['num_agents_prev']
         df['num_submissions_movt'] = (df['num_submissions'] - df['num_submissions_prev']) / df['num_submissions_prev']
-        df['num_submissions_per_min_movt'] = (df['num_submissions_per_min'] - df['num_submissions_per_min_prev']) / df['num_submissions_per_min_prev']
+        df['sumbission_rate_mins_movt'] = (df['sumbission_rate_mins'] - df['sumbission_rate_mins_prev']) / df['sumbission_rate_mins_prev']
         df['avg_first_good_submission_rate_movt'] = (df['avg_first_good_submission_rate'] - df['avg_first_good_submission_rate_prev']) / df['avg_first_good_submission_rate_prev']
         df['avg_rejection_rate_movt'] = (df['avg_rejection_rate'] - df['avg_rejection_rate_prev']) / df['avg_rejection_rate_prev']
         df['avg_quality_score_movt'] = (df['avg_quality_score'] - df['avg_quality_score_prev']) / df['avg_quality_score_prev']
@@ -81,7 +81,6 @@ def execute(event, context):
         except Exception:
             ...
         
-
         '''
         Get top project for every movt metric
         '''

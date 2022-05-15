@@ -59,7 +59,7 @@ def execute(event, context):
         df['num_workflows_movt'] = (df['num_workflows'] - df['num_workflows_prev']) / df['num_workflows_prev']
         df['num_agents_movt'] = (df['num_agents'] - df['num_agents_prev']) / df['num_agents_prev']
         df['num_submissions_movt'] = (df['num_submissions'] - df['num_submissions_prev']) / df['num_submissions_prev']
-        df['sumbission_rate_mins_movt'] = np.round((df['sumbission_rate_mins'] - df['sumbission_rate_mins_prev']) / df['sumbission_rate_mins_prev'], decimals=2)
+        df['sumbission_rate_mins_movt'] = (df['sumbission_rate_mins'] - df['sumbission_rate_mins_prev']) / df['sumbission_rate_mins_prev']
         df['avg_first_good_submission_rate_movt'] = (df['avg_first_good_submission_rate'] - df['avg_first_good_submission_rate_prev']) / df['avg_first_good_submission_rate_prev']
         df['avg_rejection_rate_movt'] = (df['avg_rejection_rate'] - df['avg_rejection_rate_prev']) / df['avg_rejection_rate_prev']
         df['avg_quality_score_movt'] = (df['avg_quality_score'] - df['avg_quality_score_prev']) / df['avg_quality_score_prev']
@@ -70,6 +70,7 @@ def execute(event, context):
         # df_movt = pd.concat([df.iloc[:,:2], df.iloc[:,-8:]], axis=1) # puts them together row wise
         
         numerical_cols = list(df.select_dtypes(include=['number']).columns)[1:]
+        df[numerical_cols] = np.round(df[numerical_cols],decimals=2)
         movt_cols = [col for col in numerical_cols if str(col).endswith('_movt')]
         df['is_missing'] = df[movt_cols].isna().all(axis=1)
         try:
@@ -77,7 +78,7 @@ def execute(event, context):
         except Exception:
             ...
         df = df[~df['is_missing']] # all movts are null, no data at all for prev or current weeks
-        df[movt_cols] = np.round(df[movt_cols],decimals=2)
+        
         # df[movt_cols] = df[movt_cols].round(2) # format movt cols
         try:
             df.to_csv(os.path.join(OUTPUT_DIR, 'df_no_nulls.csv'))

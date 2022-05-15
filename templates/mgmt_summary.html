@@ -31,10 +31,9 @@
     <p>Hello {{ name|default('there', true) }},</p>
     <p>This is a project level summary that shows week on week movements around productivity metrics.</p>
     <p>A total of <b>{{num_projects}}</b> projects with <b>{{num_workflows}}</b> workflows and <b>{{num_agents}}</b> agents found. </p>
-    <p>The date ranges for the data are: <br>
-      Current week: &emsp;&emsp;<b>{{start_current_week}}</b> - <b>{{end_current_week}}</b><br>
-      Previous week: &emsp;&emsp;<b>{{start_previous_week}}</b> - <b>{{end_previous_week}}</b>
-    </p>
+    <p>The date ranges for the data are:</p>
+    <p>Current week: &emsp;&emsp;<b>{{start_current_week}}</b> - <b>{{end_current_week}}</b><br>
+    Previous week: &emsp;&emsp;<b>{{start_previous_week}}</b> - <b>{{end_previous_week}}</b></p>
     <p>The table below shows top movements (+ve and -ve) for each metric. See attached file for details on all projects.</p>
     <table id='details_tbl'>
         <thead>
